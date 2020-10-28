@@ -1,13 +1,51 @@
-from aws_cdk import (
-    aws_s3 as s3,
-    aws_s3_deployment as s3upload,
-    core,
-    aws_events as events,
-    aws_lambda as lambda_,
-    aws_events_targets as targets,
-    aws_dynamodb,
-    aws_iam,
-)
+import * as cdk from '@aws-cdk/core';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as s3upload from '@aws-cdk/aws-s3-deployment'; // <--------------------
+import * as events from '@aws-cdk/aws-events';
+import * as events from '@aws-cdk/aws-events';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+import * as iam from '@aws-cdk/aws-iam';
+
+
+// Instantiate Bucket with bucketName and versioned properties
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  bucketName: 'my-bucket',
+   versioned: true,
+});
+
+
+//******************************************************************
+
+//The following code creates a new role, trusting the Amazon EC2 service.
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),   // required
+});
+
+// Add a policy to a Role
+role.addToPolicy(new iam.PolicyStatement({
+  effect: iam.Effect.ALLOW,
+  resources: ['*'],
+  actions: [
+      'logs:CreateLogStream',
+      'logs:PutLogEvents',
+      'logs:CreateLogGroup',
+      'cloudwatch:*',
+      'dynamodb:*',
+      's3:*',
+      'lambda:*',
+      'dynamodb: *']
+    })
+); 
+
+// Add a managed policy to a role you can use
+role.addManagedPolicy(
+    ManagedPolicy.fromAwsManagedPolicyName('SDG-D1-pipeline-policy')
+);
+
+****************************************************************************************
+
 
 
 class FirstStack(core.Stack):
@@ -42,23 +80,7 @@ class FirstStack(core.Stack):
                                                s3upload.Source.asset('./files')]
                                            )
 
-        iamRole = aws_iam.Role(self,
-                               "onethree",
-                               role_name=first_lambda_Role_name,
-                               assumed_by=aws_iam.ServicePrincipal(
-                                   "lambda.amazonaws.com")
-                               )
-
-        iamRole.add_to_policy(aws_iam.PolicyStatement(
-            effect=aws_iam.Effect.ALLOW,
-            actions=["logs:CreateLogGroup",
-                     "logs:CreateLogStream",
-                     "logs:PutLogEvents",
-                     "cloudwatch:*",
-                     "dynamodb:*",
-                     "s3:*"],
-            resources=["*"]
-        ))
+   
 
         with open("files/lambdafiles/lambda-handler1.py", encoding="utf8") as fp:
             handler_code = fp.read()
@@ -92,6 +114,47 @@ class FirstStack(core.Stack):
                        value=lambdaFunction.function_name)
 
 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 class SecondStack(core.Stack):
     def __init__(self, app: core.App, id: str) -> None:
         super().__init__(app, id)
